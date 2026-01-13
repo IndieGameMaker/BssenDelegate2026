@@ -8,37 +8,41 @@
 
 class Program
 {
-    // 1. 델리게이트 선언
-    private delegate void LoggerDelegate(string msg);
-    
     static void Main(string[] args)
     {
-        // 2. 델리게이트 할당
-        LoggerDelegate? log = null;
+        Player player = new Player("Zack", 100);
         
-        // 3. 델리게이트 호출
-        //log("델리게이트 호출 성공 1");
-        
-        // 4. 델리게이트 체인
-        log += Logger;
-        log += LoggerTime;
-        
-        log?.Invoke("델리게이트 호출 성공 : 체인");
-        
-        Console.WriteLine("정상 종료");
-        
-        // 5. 델리게이트 제거
-        log -= Logger;
-        log?.Invoke("델리게이트 호출 성공 : 체인 제거 후");
+        // 플레이어 사망 이벤트 발생
+        // player.OnPlayerDie?.Invoke();
+    }
+}
+
+class Player
+{
+    public string Name { get; }  // 읽기 전용 속성 프로퍼티
+    private int _hp;             // 내부 필드
+    
+    public delegate void PlayerDieHandler();
+    public event PlayerDieHandler OnPlayerDie;
+    
+    public Player(string name, int hp)
+    {
+        Name = name;
+        _hp = hp;
+        OnPlayerDie += Die;
     }
 
-    static void Logger(string msg)
+    public void Die()
     {
-        Console.WriteLine(msg);
+        Console.WriteLine("플레이어 사망");
     }
 
-    static void LoggerTime(string msg)
+    public void TakeDamage(int damage)
     {
-        Console.WriteLine($"[{DateTime.Now:HH:mm:ss}] {msg}");
+        _hp -= damage;
+        if (_hp <= 0) 
+        {
+            OnPlayerDie?.Invoke();
+        }
     }
 }
