@@ -9,19 +9,36 @@
 class Program
 {
     // 1. 델리게이트 선언
-    private delegate void LoggerDelegate();
+    private delegate void LoggerDelegate(string msg);
     
     static void Main(string[] args)
     {
         // 2. 델리게이트 할당
-        LoggerDelegate log = Logger;
+        LoggerDelegate? log = null;
         
         // 3. 델리게이트 호출
-        log();
+        //log("델리게이트 호출 성공 1");
+        
+        // 4. 델리게이트 체인
+        log += Logger;
+        log += LoggerTime;
+        
+        log?.Invoke("델리게이트 호출 성공 : 체인");
+        
+        Console.WriteLine("정상 종료");
+        
+        // 5. 델리게이트 제거
+        log -= Logger;
+        log?.Invoke("델리게이트 호출 성공 : 체인 제거 후");
     }
 
-    static void Logger()
+    static void Logger(string msg)
     {
-        Console.WriteLine("델리게이트 호출 : Hello, World!");
+        Console.WriteLine(msg);
+    }
+
+    static void LoggerTime(string msg)
+    {
+        Console.WriteLine($"[{DateTime.Now:HH:mm:ss}] {msg}");
     }
 }
